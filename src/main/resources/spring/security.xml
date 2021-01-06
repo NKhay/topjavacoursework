@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans
+        xmlns="http://www.springframework.org/schema/security"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:beans="http://www.springframework.org/schema/beans"
+        xsi:schemaLocation="
+      http://www.springframework.org/schema/security
+      http://www.springframework.org/schema/security/spring-security.xsd
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <http pattern="/api/**" use-expressions="true" name="restSecurityFilterChain" create-session="stateless">
+        <http-basic/>
+        <intercept-url pattern="/api/register" access="isAnonymous()"/>
+        <intercept-url pattern="/api/admin/**" access="hasAuthority('ADMIN')"/>
+        <intercept-url pattern="/api/**" access="isAuthenticated()"/>
+        <csrf disabled="true"/>
+    </http>
+
+    <beans:bean class="ru.topjavacoursework.util.PasswordUtil" id="passwordEncoder" factory-method="getPasswordEncoder"/>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider user-service-ref="userService">
+            <password-encoder ref="passwordEncoder"/>
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>
